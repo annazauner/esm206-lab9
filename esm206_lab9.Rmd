@@ -1,0 +1,169 @@
+---
+title: "Lab 9"
+author: "Anna Zauner"
+date: "11/22/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+# Numeric value
+my_vector <- vector(mode = "numeric", length = 100)
+
+my_second_vector <- vector(mode = "logical", length = 20)
+
+# check length of vector 
+
+length(my_vector)
+```
+
+```{r}
+# check the class
+class(my_second_vector)
+```
+
+```{r}
+# using c to create a vector
+
+my_vector <- c(1:50)
+
+# extract first value
+
+my_vector[1]
+
+# select ranges in a vector
+
+my_vector[3:7]
+```
+
+```{r}
+# matrix
+
+my_matrix <- matrix(data = 1:100, nrow = 20, ncol = 5)
+
+```
+
+```{r}
+# dimensions
+
+dim(my_matrix)
+
+# first is number rows, then number of columns
+
+length(my_matrix)
+```
+
+# Class
+
+```{r}
+class(my_matrix)
+```
+
+```{r}
+
+# index 
+my_matrix[2,]
+
+# shows what is in second row
+
+my_matrix[,3]
+
+# shows what is in the third column
+
+my_matrix[2,3]
+
+# both to find exact term
+
+my_matrix[2,3] <- 10000
+
+# modify individual cells
+
+
+```
+
+# Control flow
+
+```{r}
+# variable (counter), sequence, expression
+
+for (i in 1:10){
+  print("Hello")
+}
+```
+
+# Generating random numbers
+
+```{r}
+rnorm(n = 5, mean = 10,sd = 2)
+```
+
+# Lets combine all of the above
+
+```{r}
+# set up model parameters
+
+K <- 100
+nsteps <- 100
+mu <- 1.5
+sigma <- 0.8
+
+# set up model options
+
+N <- vector(mode = "numeric", length = nsteps)
+N[1] <- 25
+
+
+# model it
+
+for(t in 2:nsteps){
+  r <- rnorm(n = 1, mean = mu, sd = sigma)
+  N[t] <- N[t-1] + r * (1-(N[t-1]/K))
+}
+
+plot(N)
+```
+
+```{r}
+# set up model parameters
+
+K <- 100
+nsteps <- 100
+mu <- 0.4
+sigma <- 1
+
+# set up model options
+
+N <- matrix(data = NA, nrow = nsteps, ncol = 100)
+N[1,] <- 25
+
+
+# model it
+
+for(t in 2:nsteps){
+  r <- rnorm(n = 100, mean = mu, sd = sigma)
+  N[t,] <- N[t-1,] + r * (1-(N[t-1,]/K))
+}
+
+matplot(N, type = "l")
+```
+
+```{r}
+# load tidyverse
+
+library(tidyverse)
+
+# create data frame
+
+my_data <- as_tibble(N) %>% 
+  mutate(time = 1:nsteps) %>% 
+  gather(run, N, -time)
+
+# vizz
+
+ggplot(data = my_data, mapping = aes(x = time, y = N))+
+  geom_line(aes(group = run), size = 0.1, alpha = 0.5)+
+  stat_summary(geom = "line", fun = mean, color = "red")+
+  theme_bw()+
+  labs(x = "Time (years)", y = "Population size (N)")
+
+```
+
